@@ -44,11 +44,9 @@ class LoginPage {
 
     // Fixture üzerinden valid veriyi çekip dolduran "Senior" metod
     fillValidCredentials() {
-        //Cypress.env('VALID_EMAIL')
-            const email = data.validUser.email; 
-            const password = data.validUser.password;
-            
-            this.fillCredentials(email, password);
+        const email = Cypress.env('VALID_EMAIL');
+        const password = Cypress.env('VALID_PASSWORD');
+        this.fillCredentials(email, password);
     };
 
     submit() {

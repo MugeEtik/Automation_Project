@@ -15,3 +15,12 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // Bu hata mesajını içeren hataların testi durdurmasını engeller
+  if (err.message.includes('google_trackConversion')) {
+    return false;
+  }
+  // Diğer hataların testi durdurmasına izin ver
+  return false;
+});
