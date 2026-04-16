@@ -21,6 +21,6 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   if (err.message.includes('google_trackConversion')) {
     return false;
   }
-  // Diğer hataların testi durdurmasına izin ver
+  // Diğer hataların testi durdurmasına izin ver: Sitenin kendi içindeki JS hatalarını görmezden gel, testi durdurma!
   return false;
 });
