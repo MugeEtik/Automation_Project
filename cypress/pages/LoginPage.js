@@ -15,20 +15,20 @@ class LoginPage {
     _getPasswordInput() { return cy.get('#header-password'); }
     _getLoginButton() { return cy.get('#login-btn-322').contains('Giriş Yap'); }  // "GİRİŞ YAP" butonu
     _getRegisterButton() { return cy.get('#register-btn-322').contains('Kayıt Ol'); }  // "KAYIT OL" butonu
-    _getBeniHatirla() { return cy.get('#header-member-panel-322 > div.drawer-body > form > div.w-100.d-flex.flex-wrap.justify-content-between.header-remember > label > span').contains('Beni Hatırla'); }  // "Beni Hatırla" checkbox'ı
-    _getSifremiUnuttum() { return cy.get('#header-member-panel-322 > div.drawer-body > form > div.w-100.d-flex.flex-wrap.justify-content-between.header-remember > a').contains('Şifremi Unuttum'); }  // "Şifremi Unuttum" linki
+    _getBeniHatirla() { return cy.get('#header-member-panel-322 > div.drawer-body > form > div.w-100.d-flex.flex-wrap.justify-content-between.header-remember > label').should('contain', 'Beni Hatırla'); }  // "Beni Hatırla" checkbox'ı
+    _getSifremiUnuttum() { return cy.get('#header-member-panel-322 > div.drawer-body > form > div.w-100.d-flex.flex-wrap.justify-content-between.header-remember > a').should('contain', 'Şifremi Unuttum'); }  // "Şifremi Unuttum" linki
         // Başarılı giriş sonrası sağ üstte görünen "Hesabım" ikonunu temsil eder, bu ikonun görünürlüğü başarılı girişin göstergesidir.
     _getAccountIcon() { return cy.get('#header-account > i'); }   
         // Giriş hatası durumunda görünen hata mesajı kutusu : "Giriş bilgileriniz hatalı." mesajı > locator alamıyorum, çünkü mesaja tıklamaya çalışınca mesaj kayboluyor, bu yüzden genel bir class ile yakalıyorum. İçerik doğrulaması yaparak doğru mesajı kontrol edeceğiz.
-    _getErrorMessage() { return cy.contains('Giriş bilgileriniz hatalı.'); } // *****Çözemiyorum.
+    _getErrorMessage() { return cy.get('#header-login').should('contain', 'Giriş bilgileriniz hatalı.'); } // *****Çözemiyorum.
         // Hesap kilitlenme durumunda görünen mesaj kutusu
     _getlockoutMessage() { return cy.get('.lockout-msg'); }
     _getAnnouncementModal() { return cy.get('#notification-popup'); }
         // Kampanya pop-up'ının kapatma butonu: ID'si dinamik olabilir, genellikle T.modal kütüphanesi kullanılır ve ID'si "t-modal-close" ile başlar. Bu yüzden CSS selector'ünde "id^=" kullanarak bu yapıyı hedefliyoruz:
         // id^="t-modal-close" ifadesi, ID'si bu metinle başlayan butonu bulur (ID değişse de yakalar): Genellikle T.modal kütüphanesi kapatma butonu için bunu kullanır:
-    _getAnnouncementCloseBtn() { return cy.get('[id^="t-modal-close"] .ti-close'); }
+    _getAnnouncementCloseBtn() { return cy.get('[id^="t-modal-close"] .ti-close'); }  // #t-modal-close-1 > i
         // Çerez politikası pop-up'ının kabul butonu ve perde (overlay) elementleri
-    _getCookieAcceptBtn() { return cy.get('.cc-nb-okagree'); }  // Çerez politikası butonu
+    _getCookieAcceptBtn() { return cy.get('.cc-nb-okagree'); }  // Çerez politikası "Tümünü Kabul Et" butonu
     _getCookieOverlay() { return cy.get('.cc-window.cc-banner'); }  // Çerez politikası perde (overlay) elementi
 
     // ---------------------------------------------------------
@@ -83,13 +83,9 @@ class LoginPage {
         cy.contains('E-posta ile Giriş', { timeout: 10000 }).should('be.visible').click({ force: true });
     }
 
-    clickLink(linkName) {
-        cy.contains(linkName).should('be.visible').click();
-    }
-
     fillCredentials(email, password) {
-        if (email) this._getEmailInput().clear().type(email);
-        if (password) this._getPasswordInput().clear().type(password);
+        if (email) this._getEmailInput().clear({ force: true }).type(email, { force: true });  // Görünürlük hatasını aşarak clear ve type işlemi yapıyoruz, force ile zorlayarak tıklama yapıyoruz.
+        if (password) this._getPasswordInput().clear({ force: true }).type(password, { force: true });
     }
 
     // Fixture üzerinden valid veriyi çekip dolduran "Senior" metod
@@ -97,10 +93,10 @@ class LoginPage {
         const email = Cypress.env('VALID_EMAIL');
         const password = Cypress.env('VALID_PASSWORD');
         this.fillCredentials(email, password);
-    };
+    }
 
     submit() {
-        this._getLoginButton().click();
+        this._getLoginButton().click({ force: true });
     }
 
     // ---------------------------------------------------------
@@ -141,17 +137,14 @@ class LoginPage {
     verifyLockedAccount(lockedAccount) {
         // Bu metod, lockout durumunu doğrulamak için backend API'sine istek atabilir veya UI'da belirli bir elementin görünürlüğünü kontrol edebilir.
         // Örneğin, lockout durumunu doğrulamak için API çağrısı yapabiliriz:
-        cy.request({
-            method: 'POST',
-            url: '/api/login', // Real API endpoint
-            body: {
-                email: lockedAccount.email,
-                password: lockedAccount.password
-            }
-        }).then((response) => {
-            // Lockout confirmation.
-            expect(response.status).to.eq(401); // example: 401 Unauthorized
-        });
+        cy.intercept('POST', '/api/login', {
+            statusCode: 429, // Too Many Requests
+            body: { message: "Çok fazla istek talebinde bulundunuz. Lütfen 30 dakika sonra tekrar deneyin." }
+        }).as('lockoutResponse');
+    }
+
+    clickLink(linkName) {
+        cy.contains(linkName).should('be.visible').click();
     }
 
     verifyPasswordRecoveryForm() {

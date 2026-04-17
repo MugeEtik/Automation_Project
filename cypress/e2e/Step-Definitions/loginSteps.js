@@ -53,6 +53,7 @@ Then("I should see the error message {string}", (errorMessage) => {
 // TC04_Account-Lockout-Policy
 When ("I perform 10 consecutive failed login attempts", () => {
    for (let i = 0; i < 10; i++) {
+    loginPage.openLoginPopup(); // Modalı her denemede tekrar açmayı garantilemek için bu adımı döngü içine alıyoruz.
     loginPage.fillCredentials(`fail${i}@test.com`, "wrongpass");
     loginPage.submit();
   }
