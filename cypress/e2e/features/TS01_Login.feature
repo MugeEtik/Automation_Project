@@ -1,5 +1,5 @@
-@US01 @Authentication @TS01 @Login 
-Feature: US01 - User Authentication / TS01 - Login
+@US01 @TS01 @Authentication @Login 
+Feature: US01 / TS01 - Login
   As a registered user
   I want to login to Kitapsepeti.com with my email and password
   So that I can access my profile and order history safely
