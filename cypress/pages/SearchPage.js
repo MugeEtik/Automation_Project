@@ -7,8 +7,8 @@ class SearchPage {
     // Locators - Private-like accessors (Encapsulation)
     // ---------------------------------------------------------
 
-    _getSearchInput() { return cy.get('#search-input'); } // Arama çubuğu
-    _getSearchButton() { return cy.get('.search-button'); } // Arama butonu/ikonu
+    _getSearchInput() { return cy.get('#live-search'); } // Arama çubuğu
+    _getSearchButton() { return cy.get('#live-search-btn').and('contains', 'Ara'); } // Arama butonu/ikonu
     _getProductCards() { return cy.get('.product-item'); } // Ürün kartları listesi
     _getEmptyResultMessage() { return cy.get('.no-results-message'); } // "Ürün bulunamadı" mesajı
     _getSortingDropdown() { return cy.get('#sort-select'); } // Sıralama menüsü
@@ -37,10 +37,8 @@ class SearchPage {
         });
     }
 
-    visit(pageName) {
-        cy.visit(this.pageUrls[pageName] || "/");
-        cy.wait(2000); // Elementlerin render olması için [8]
-        this.handleInitialPopups();
+    verifySearchInput() {
+        this._getSearchInput().should('be.visible').and('have.attr', 'placeholder', 'Aradığınız ürünün adını yazınız.');
     }
 
     fillSearchInput(keyword) {
@@ -52,7 +50,6 @@ class SearchPage {
     }
 
     hoverProductPrice() {
-        // AC5: Hover işlemi için trigger kullanıyoruz [9, 10]
         this._getProductPriceArea().first().trigger('mouseover', { force: true });
     }
 
@@ -61,13 +58,11 @@ class SearchPage {
     }
 
     applyCategoryFilters() {
-        // AC7: Kategori, Marka ve Model filtrelerini seçme [11, 12]
         this._getFilterOptions().contains('Kategoriler').click({ force: true });
         this._getFilterOptions().contains('Marka').click({ force: true });
     }
 
     clickHeaderCategory() {
-        // AC8: Hazır kategorilere tıklama [11, 13]
         cy.get('.main-menu .category-item').first().click({ force: true });
     }
 
@@ -76,7 +71,7 @@ class SearchPage {
     // ---------------------------------------------------------
 
     verifySearchResults(keyword) {
-        // AC2: Ürünlerin aranan kelimeyle ilgili olduğunu doğrula [11, 14]
+        // Ürünlerin aranan kelimeyle ilgili olduğunu doğrula
         this._getProductCards().should('have.length.at.least', 1);
         this._getProductCards().first().should('contain.text', keyword);
     }
@@ -94,7 +89,7 @@ class SearchPage {
     }
 
     verifyProductCardIntegrity() {
-        // AC4: Görsel, Ad, Yayınevi ve Fiyat kontrolü [10, 11]
+        // Görsel, Ad, Yayınevi ve Fiyat kontrolü
         const card = this._getProductCards().first();
         card.find('img').should('be.visible');
         card.find('.product-title').should('not.be.empty');
@@ -126,7 +121,7 @@ class SearchPage {
     }
 
     verifyLazyLoadingActive() {
-        // AC9: Aşağı kaydırdıkça yeni ürünlerin gelmesi [11, 15]
+        // Aşağı kaydırdıkça yeni ürünlerin gelmesi
         const initialCount = 10;
         this._getProductCards().should('have.length.at.least', initialCount);
     }

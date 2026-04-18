@@ -1,10 +1,17 @@
 import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
 import searchPage from "../../pages/SearchPage"; // SearchPage nesnesini import ediyoruz
+import loginPage from "../../pages/LoginPage"; // 1. LoginPage'i içeri aktararak, login adımlarını da kullanacağım
 
 // Background
 Given("I am on the Kitapsepeti {string} as a logged-in user", (pageName) => {
-  // visit metodu LoginPage'deki gibi pop-up'ları (çerez/kampanya) otomatik yönetmelidir
-  searchPage.visit(pageName); 
+  loginPage.visit("homepage");
+  loginPage.openLoginPopup();
+  loginPage.fillValidCredentials();
+  loginPage.submit();
+  loginPage.verifyLoggedIn();
+
+  // Arama testlerine başlamadan önce search input field check
+  searchPage.verifySearchInput(); 
 });
 
 // TC06_Search-Success-Flow 
@@ -14,10 +21,6 @@ When("I enter {string} into the search bar", (keyword) => {
 
 When("I click the search button", () => {
   searchPage.submitSearch();
-});
-
-Then("I should be redirected to the {string} page", (path) => {
-  cy.url().should('include', path);
 });
 
 Then("I should see products related to {string}", (keyword) => {

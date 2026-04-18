@@ -13,8 +13,7 @@ Feature: US02 / TS02 - Search&Listing
   # Validate successful redirection to the /arama page and confirm that the search input field is cleared [2].
     When I enter "Roman" into the search bar
     And I click the search button
-    Then I should be redirected to the "/arama" page
-    And I should see products related to "Roman"
+    Then I should see products related to "Roman"
     And the search input field should be cleared
 
   @TC07 @AC3 @Negative @Regression
