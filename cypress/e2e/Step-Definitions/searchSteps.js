@@ -2,7 +2,7 @@ import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
 import searchPage from "../../pages/SearchPage"; // SearchPage nesnesini import ediyoruz
 
 // Background
-Given("I am on the Kitapsepeti {string}", (pageName) => {
+Given("I am on the Kitapsepeti {string} as a logged-in user", (pageName) => {
   // visit metodu LoginPage'deki gibi pop-up'ları (çerez/kampanya) otomatik yönetmelidir
   searchPage.visit(pageName); 
 });

@@ -5,7 +5,7 @@ Feature: US02 / TS02 - Search&Listing
   So that I can quickly reach the product I want to buy
 
   Background:
-    Given I am on the Kitapsepeti "homepage"
+    Given I am on the Kitapsepeti "homepage" as a logged-in user
 
   @TC06 @AC1 @AC2 @Positive @Smoke @Regression
   Scenario: TC06_Search-Success-Flow: Search Execution and UI Reset

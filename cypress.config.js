@@ -17,7 +17,6 @@ module.exports = defineConfig({
     viewportHeight: 720,
     video: false, // Şimdilik sistemi yormayalım
     defaultCommandTimeout: 10000,
-   // allowCypressEnv: false, // Güvenlik için env değişkenlerine doğrudan erişimi kapatıyoruz, sadece cy.env() üzerinden erişim sağlanacak
 
     async setupNodeEvents(on, config) {
       // Cucumber eklentisini sisteme tanıtıyoruz
