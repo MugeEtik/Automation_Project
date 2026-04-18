@@ -90,8 +90,8 @@ class LoginPage {
 
     // Fixture üzerinden valid veriyi çekip dolduran "Senior" metod
     fillValidCredentials() {
-        const email = Cypress.env('VALID_EMAIL');
-        const password = Cypress.env('VALID_PASSWORD');
+        const email = cy.env('VALID_EMAIL');
+        const password = cy.env('VALID_PASSWORD');
         this.fillCredentials(email, password);
     }
 

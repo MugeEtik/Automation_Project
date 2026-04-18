@@ -17,15 +17,22 @@ module.exports = defineConfig({
     viewportHeight: 720,
     video: false, // Şimdilik sistemi yormayalım
     defaultCommandTimeout: 10000,
+   // allowCypressEnv: false, // Güvenlik için env değişkenlerine doğrudan erişimi kapatıyoruz, sadece cy.env() üzerinden erişim sağlanacak
 
     async setupNodeEvents(on, config) {
       // Cucumber eklentisini sisteme tanıtıyoruz
       await addCucumberPreprocessorPlugin(on, config);
 
+      console.log(process.env.VALID_EMAIL); // .env dosyasındaki değeri kontrol amaçlı yazdırıyoruz
+      console.log(process.env.VALID_PASSWORD); // .env dosyasındaki değeri kontrol amaçlı yazdırıyoruz
+
+
+    // KRİTİK ADIM: .env içindeki verileri Cypress'in anlayacağı formata sokuyoruz
+      config.env.VALID_EMAIL = process.env.VALID_EMAIL;
+      config.env.VALID_PASSWORD = process.env.VALID_PASSWORD;
+
       // esbuild motorunu (bundler) devreye alıyoruz
-      on(
-        "file:preprocessor",
-        createBundler({
+      on("file:preprocessor", createBundler({
           plugins: [createEsbuildPlugin(config)],
         })
       );
