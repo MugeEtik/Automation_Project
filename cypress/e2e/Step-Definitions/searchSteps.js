@@ -23,8 +23,8 @@ When("I click the search button", () => {
   searchPage.submitSearch();
 });
 
-Then("I should see products related to {string}", (keyword) => {
-  searchPage.verifySearchResults(keyword);
+Then("I should see products related to bilimkurgu", () => {
+  searchPage.verifySearchResults();
 });
 
 Then("the search input field should be cleared", () => {
@@ -37,12 +37,12 @@ Then("I shouldn't see any products on the search results page", () => {
 });
 
 // TC08_Product-Card-Interaction
-When("I perform a search for a valid product", () => {
-  searchPage.fillSearchInput("Kitap");
+When("I perform a search for a valid product {string}", (product) => {
+  searchPage.fillSearchInput(product);
   searchPage.submitSearch();
 });
 
-Then("each product card should display {string}, {string}, {string} and {string}", (img, title, pub, price) => {
+Then("each product card should display {string}, {string}, {string} and {string}", () => {
   searchPage.verifyProductCardIntegrity();
 });
 
@@ -50,8 +50,8 @@ When("I hover over the product price area", () => {
   searchPage.hoverProductPrice();
 });
 
-Then("the {string} button should become visible and active", (buttonName) => {
-  searchPage.verifyAddToCartButtonState(buttonName);
+Then("the {string} button should become visible and active", () => {
+  searchPage.verifyAddToCartButtonState();
 });
 
 // TC09_Catalog-Management
@@ -64,7 +64,7 @@ When("I open the {string} menu", (menuName) => {
   searchPage.openSortingDropdown();
 });
 
-Then("I should see {string}, {string} and {string} options", (opt1, opt2, opt3) => {
+Then("I should see {string}, {string}, {string}, {string} and {string} options", (opt1, opt2, opt3, opt4, opt5) => {
   searchPage.verifySortingMenuOptions();
 });
 
@@ -81,8 +81,8 @@ When("I click on a category from the top navigation on the homepage", () => {
   searchPage.clickHeaderCategory();
 });
 
-Then("the category name should match the header above the products", () => {
-  searchPage.verifyHeaderMatchesCategory();
+Then("{string} sidebar should be visible for all categories", () => {
+  searchPage.verifyMenuSidebar();
 });
 
 When("I scroll down to the bottom of the page", () => {

@@ -11,9 +11,9 @@ Feature: US02 / TS02 - Search&Listing
   Scenario: TC06_Search-Success-Flow: Search Execution and UI Reset
   # Execute a search query with a minimum of 1 character. 
   # Validate successful redirection to the /arama page and confirm that the search input field is cleared [2].
-    When I enter "Roman" into the search bar
+    When I enter "bilimkurgu" into the search bar
     And I click the search button
-    Then I should see products related to "Roman"
+    Then I should see products related to bilimkurgu
     And the search input field should be cleared
 
   @TC07 @AC3 @Negative @Regression
@@ -28,7 +28,7 @@ Feature: US02 / TS02 - Search&Listing
   Scenario: TC08_Product-Card-Interaction: Visual Integrity and Hover States
   # Verify the integrity of product cards (Image, Title, Publisher, Price). 
   # Assert that the "Add to Cart" button becomes visible only upon hovering over the price area.
-    When I perform a search for a valid product
+    When I perform a search for a valid product "soluk mavi nokta"
     Then each product card should display "Ürün Görseli", "Ürün Adı", "Yayınevi" and "Fiyat"
     When I hover over the product price area
     Then the "Sepete Ekle" button should become visible and active
@@ -36,16 +36,16 @@ Feature: US02 / TS02 - Search&Listing
   @TC09 @AC6 @AC7 @Functional @Regression
   Scenario: TC09_Catalog-Management: Sorting and Filtering Logic
   # Validate sorting menu options and functional filtering accuracy.
-    When I perform a search for "Kitap"
+    When I perform a search for "bilimkurgu"
     And I open the "Sıralama" menu
-    Then I should see "Fiyat Artan", "Fiyat Azalan" and "Yeniden eskiye" options
-    When I apply filters for "Kategoriler", "Marka" and "Model" [1]
+    Then I should see "Fiyat Artan", "Fiyat Azalan", "Yeniden Eskiye", "Eskiden Yeniye" and "Varsayılan Sıralama" options
+    When I apply filters for "Kategoriler", "Marka" and "Model"
     Then the product list should be updated according to the selected filters
 
   @TC10 @AC8 @AC9 @Usability @Regression
   Scenario: TC10_Nav-and-Lazy-Loading: Category Navigation
   # Verify header category navigation and infinite scroll logic.
     When I click on a category from the top navigation on the homepage
-    Then the category name should match the header above the products
+    Then "Menü" sidebar should be visible for all categories 
     When I scroll down to the bottom of the page
     Then more products should be loaded automatically (Lazy Loading) 

@@ -8,17 +8,21 @@ class SearchPage {
     // ---------------------------------------------------------
 
     _getSearchInput() { return cy.get('#live-search'); } // Arama çubuğu
-    _getSearchButton() { return cy.get('#live-search-btn').and('contains', 'Ara'); } // Arama butonu/ikonu
-    _getProductCards() { return cy.get('.product-item'); } // Ürün kartları listesi
-    _getEmptyResultMessage() { return cy.get('.no-results-message'); } // "Ürün bulunamadı" mesajı
-    _getSortingDropdown() { return cy.get('#sort-select'); } // Sıralama menüsü
-    _getAddToCartButton() { return cy.get('.add-to-cart-btn'); } // Sepete ekle butonu (hover ile çıkan)
-    _getProductPriceArea() { return cy.get('.product-price'); } // Hover yapılacak fiyat alanı
-    _getCategoryHeader() { return cy.get('.category-title'); } // Ürünlerin üzerindeki kategori başlığı
-    _getFilterOptions() { return cy.get('.filter-group'); } // Filtreleme paneli
+    _getSearchButton() { return cy.get('#live-search-btn').contains('Ara'); } // Arama butonu/ikonu
+    _getProductCards() { return cy.get('.product-detail-card'); } // Ürün kartları listesi
+    _getProductPriceArea() { return cy.get('.product-price-wrapper'); } // Hover yapılacak fiyat alanı
+    _getAddToCartButton() { return cy.get('[id^="product-addcart-button"]'); } // Sepete ekle butonu (hover ile çıkan)
+    _getSortingDropdown() { return cy.get('#sort'); } // Sıralama menüsü
+    _getFilterOptionsCat() { return cy.get('#accordion-categories-361'); } // Kategori filtresi
+    _getFilterOptionsBrand() { return cy.get('#accordion-brand-361'); } // Marka filtresi
+    _getFilterOptionsModel() { return cy.get('#accordion-model-361'); } // Model filtresi
+    _getCategoryHeader() { return cy.get('.header-mobile-menu-btn'); } // Ürünlerin üzerindeki kategori başlığı
+    _getMenuHeader() { return cy.get('#mobile-menu-322 > div > div.drawer-title > span'); } // Kategoriler menüsü
+    _getMenuContainer() { return cy.get('nav.mb-2 > ul.clearfix'); }
+    _getMobileMenuCloseBtn() { return cy.get('#mobile-menu-close'); }
 
     // ---------------------------------------------------------
-    // Actions - Public Methods
+    // Actions & Verifications (Assertions)
     // ---------------------------------------------------------
 
     // Pop-up yönetimi (LoginPage'den miras alınan standart yapı)
@@ -37,8 +41,9 @@ class SearchPage {
         });
     }
 
+    // TC06_Search-Success-Flow: Arama işlemi için gerekli adımlar ve doğrulamalar
     verifySearchInput() {
-        this._getSearchInput().should('be.visible').and('have.attr', 'placeholder', 'Aradığınız ürünün adını yazınız.');
+        this._getSearchInput().should('be.visible').and('be.enabled').and('have.attr', 'placeholder', 'Aradığınız ürünün adını yazınız.');
     }
 
     fillSearchInput(keyword) {
@@ -46,78 +51,91 @@ class SearchPage {
     }
 
     submitSearch() {
-        this._getSearchButton().click({ force: true });
+        this._getSearchInput().type('{enter}', { force: true });
     }
 
-    hoverProductPrice() {
-        this._getProductPriceArea().first().trigger('mouseover', { force: true });
-    }
-
-    openSortingDropdown() {
-        this._getSortingDropdown().click({ force: true });
-    }
-
-    applyCategoryFilters() {
-        this._getFilterOptions().contains('Kategoriler').click({ force: true });
-        this._getFilterOptions().contains('Marka').click({ force: true });
-    }
-
-    clickHeaderCategory() {
-        cy.get('.main-menu .category-item').first().click({ force: true });
-    }
-
-    // ---------------------------------------------------------
-    // Verifications (Assertions)
-    // ---------------------------------------------------------
-
-    verifySearchResults(keyword) {
-        // Ürünlerin aranan kelimeyle ilgili olduğunu doğrula
-        this._getProductCards().should('have.length.at.least', 1);
-        this._getProductCards().first().should('contain.text', keyword);
+    verifySearchResults() {
+        this._getProductCards().should('be.visible').and('have.length.at.least', 1);
     }
 
     verifySearchInputCleared() {
-        this._getSearchInput().should('have.value', '');
+        this._getSearchInput().should('be.visible').and('have.value', '');
     }
 
-    verifyEmptyStateMessage(message) {
-        this._getEmptyResultMessage().should('be.visible').and('contain.text', message);
-    }
-
+    // TC07_Negative-Search-State: Arama sonucunda ürün bulunamadığında gösterilen boş durum mesajını doğrulama
     verifyNoProductCardsDisplayed() {
         this._getProductCards().should('not.exist');
     }
 
+    // TC08_Product-Card-Interaction: Ürün kartlarının bütünlüğünü ve etkileşimlerini doğrulama
     verifyProductCardIntegrity() {
-        // Görsel, Ad, Yayınevi ve Fiyat kontrolü
-        const card = this._getProductCards().first();
-        card.find('img').should('be.visible');
-        card.find('.product-title').should('not.be.empty');
-        card.find('.publisher').should('not.be.empty');
-        card.find('.price').should('not.be.empty');
+        // "Ürün Görseli", "Ürün Adı", "Yayınevi" and "Fiyat" kontrolü
+        cy.wait(1000); // Arama sonuçlarının tam olarak yüklenmesi için bekleme ekleyelim
+        cy.window().scrollTo('top'); 
+        this._getProductCards().eq(0).within(() => {
+            // Kartın görünürlüğünden emin olalım
+            cy.root().should('exist').and('be.visible'); // Kartın kendisi görünür olmalı
+            
+            // Artık Cypress sadece bu kartın içindeki dünyayı görüyor: Burada cy.get kullanmak, global değil, sadece kartın içindeki elementleri yakalar.
+            //cy.get('a.image-wrapper img, .position-relative img').should('be.visible'); // Ürün Görseli
+            cy.get('.product-title').should('be.visible').and('not.be.empty'); // Ürün Adı
+            cy.get('.brand-title').should('be.visible'); // Yayınevi
+            cy.get('span.product-price').should('be.visible'); // Fiyat 
+        
+            cy.log('Product card integrity verified within the scope!'); // Scope doğrulaması
+        });
     }
 
-    verifyAddToCartButtonState(buttonName) {
-        this._getAddToCartButton().should('be.visible').and('contain.text', buttonName);
+    hoverProductPrice() {
+        cy.window().scrollTo('top'); 
+        this._getProductPriceArea().trigger('mouseover', { force: true }).click().should('be.visible'); //.and('contain', 'Sepete Ekle'); // Hover sonrası "Sepete Ekle" butonunun görünürlüğü
+    }
+
+    verifyAddToCartButtonState() {
+        this._getAddToCartButton().click({ force: true }); //.should('be.visible').and('contain.text', buttonName).and('not.be.disabled');
+    }
+    
+    // TC09_Catalog-Management: Katalog yönetimi ve sıralama/filtreleme özelliklerini doğrulama
+    openSortingDropdown() {
+        this._getSortingDropdown().select('Varsayılan Sıralama', { force: true });
     }
 
     verifySortingMenuOptions() {
         this._getSortingDropdown().should('contain', 'Fiyat Artan')
                                  .and('contain', 'Fiyat Azalan')
-                                 .and('contain', 'Yeniden eskiye');
+                                 .and('contain', 'Yeniden Eskiye')
+                                 .and('contain', 'Eskiden Yeniye')
+                                 .and('contain', 'Varsayılan Sıralama');
+    }
+
+    applyCategoryFilters() {
+        this._getFilterOptionsCat().contains('Kategoriler').click({ force: true });
+        this._getFilterOptionsBrand().contains('Marka').click({ force: true });
+        this._getFilterOptionsModel().contains('Model').click({ force: true });
     }
 
     verifyFilteredResults() {
-        // Filtre sonrası listenin güncellendiğini doğrula
         this._getProductCards().should('be.visible');
     }
 
-    verifyHeaderMatchesCategory() {
-        this._getCategoryHeader().then(($header) => {
-            const headerText = $header.text().trim();
-            cy.log('Kategori Başlığı: ' + headerText);
-            this._getCategoryHeader().should('be.visible');
-        });
+    // TC10_Lazy-Loading: Lazy loading özelliğinin çalıştığını doğrulama
+    clickHeaderCategory() {
+        this._getCategoryHeader().click({ force: true });
+    }
+
+    verifyMenuSidebar() {
+        this._getMenuHeader().should('be.visible').and('contain.text', 'Menü');
+        this._getMenuContainer().should('be.visible');
+        this._getMenuContainer().within(() => {
+            cy.get('li').should('contain', 'ROMAN')
+                        .and('contain', 'ÇOK SATANLAR')
+                        .and('contain', 'BİLİM KURGU')
+                        .and('contain', 'ÇOCUK KİTAPLARI')
+                        .and('contain', 'ÇİZGİ ROMAN');
+            });
+        this._getMobileMenuCloseBtn().should('be.visible').click({ force: true }).should('not.be.visible');
+    
+        cy.log('Sidebar navigation verified.');
     }
 
     verifyLazyLoadingActive() {

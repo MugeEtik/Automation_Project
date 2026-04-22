@@ -7,7 +7,7 @@ require('dotenv').config();
 // Artık process.env.VALID_EMAIL diyerek bu veriye ulaşabiliriz.
 
 module.exports = defineConfig({
-  //projectId: sonra eklenebilir, şimdilik local testler yapacağız
+  //projectId: (sonra eklenebilir, şimdilik local testler)
   e2e: {
     baseUrl: "https://www.kitapsepeti.com",
 

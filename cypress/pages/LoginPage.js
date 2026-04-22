@@ -57,7 +57,7 @@ class LoginPage {
         
         // Önemli: Eğer pop-up'ın gelmeme ihtimali varsa, testi durdurmaması için
         // 'body' üzerinden sızmaya devam ediyoruz ama bu kez 'timeout' ile.
-        cy.get('body', { timeout: 7000 }).then(($body) => {
+        cy.get('body', { timeout: 5000 }).then(($body) => {
             if ($body.find('#notification-popup').length > 0) {
                 this._getAnnouncementCloseBtn().click({ force: true });
                 cy.log('Kampanya pop-up mühürlendi!');
@@ -73,7 +73,7 @@ class LoginPage {
         
         // ÖNEMLİ: Sayfa yüklendikten sonra pop-up'ların render olması için küçük bir bekleme ekleyelim. Bu, pop-up'ların gelmesini beklemek ve testlerin stabil çalışmasını sağlamak için.
         // cy.pause()  kullanarak manuel kontrol de yapabilirsiniz. -> debugging için kullanışlı olabilir.
-        cy.wait(2000); // 1 saniye bekleme, pop-up'ların gelmesi için yeterli olabilir. (Gerekirse artırılabilir)
+        cy.wait(1000); // 1 saniye bekleme, pop-up'ların gelmesi için yeterli olabilir. (Gerekirse artırılabilir)
         this.handleInitialPopups();
     }
 
@@ -123,6 +123,7 @@ class LoginPage {
     }
 
     verifyLoggedIn() {
+        this._getModal({ timeout: 3000 }).should('not.exist'); // Modal'ın kaybolmasını bekliyoruz, bu genellikle başarılı girişin göstergesidir.
         this._getAccountIcon().should('be.visible');
     }
 
