@@ -27,6 +27,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+        # KRİTİK EKLEME: Node 22'yi zorunlu kılıyoruz
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Cypress run
         uses: cypress-io/github-action@v7 # Her şeyi (Node, Install, Run) bu halleder.
         with:
@@ -36,6 +42,8 @@ jobs:
           # key i GitHub Secrets'tan çekiyoruz.
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY_KITAPSEPETI }}
           API_URL_kitapsepeti: ${{ secrets.API_URL_kitapsepeti }}
+          VALID_EMAIL: ${{ secrets.VALID_EMAIL }}
+          VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
 
       - name: Upload Cypress videos
         if: always()
