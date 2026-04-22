@@ -7,7 +7,10 @@ require('dotenv').config();
 // Artık process.env.VALID_EMAIL diyerek bu veriye ulaşabiliriz.
 
 module.exports = defineConfig({
-  //projectId: (sonra eklenebilir, şimdilik local testler)
+  projectId: 'dvsq5u',
+
+  reporter: 'cypress-mochawesome-reporter', // Raporlama motoru
+  
   e2e: {
     baseUrl: "https://www.kitapsepeti.com",
 
@@ -15,7 +18,7 @@ module.exports = defineConfig({
     
     viewportWidth: 1280,
     viewportHeight: 720,
-    video: false, // Şimdilik sistemi yormayalım
+    video: true,
     defaultCommandTimeout: 10000,
 
     async setupNodeEvents(on, config) {
@@ -25,6 +28,7 @@ module.exports = defineConfig({
       console.log(process.env.VALID_EMAIL); // .env dosyasındaki değeri kontrol amaçlı yazdırıyoruz
       console.log(process.env.VALID_PASSWORD); // .env dosyasındaki değeri kontrol amaçlı yazdırıyoruz
 
+      require('cypress-mochawesome-reporter/plugin')(on);
 
     // KRİTİK ADIM: .env içindeki verileri Cypress'in anlayacağı formata sokuyoruz
       config.env.VALID_EMAIL = process.env.VALID_EMAIL;

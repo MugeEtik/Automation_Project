@@ -45,7 +45,7 @@ Feature: US01 / TS01 - Login
       | invalid_format    | 123456       | Giriş bilgileriniz hatalı |
       |                   |              | Giriş bilgileriniz hatalı |
 
-  @TC04 @AC8 @Negative @Regression @Security @API
+  @TC04 @AC8 @Negative @Regression @Security @API @Ignore
   Scenario: TC04_Account-Lockout-Policy: Account Lockout after Multiple Failed Attempts
   # Security & Rate Limiting: Assert that the system triggers a 30-minute lockout and displays the message "Çok fazla istek talebinde bulundunuz" after 10 consecutive failed login attempts. 
   # (NOTE: Backend test required / Mocking)

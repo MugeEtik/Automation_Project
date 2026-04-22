@@ -1,0 +1,54 @@
+name: CI-CD Pipeline
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * *"
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Job
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Echo user login
+        run: echo "Hello, ${{ github.actor }}"
+
+  test:
+    runs-on: ubuntu-latest
+    name: Cypress Test Job
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v7 # Her şeyi (Node, Install, Run) bu halleder.
+        with:
+          record: true
+          browser: chrome
+        env:
+          # key i GitHub Secrets'tan çekiyoruz.
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY_KITAPSEPETI }}
+          API_URL_kitapsepeti: ${{ secrets.API_URL_kitapsepeti }}
+
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v4 # v3 -> v4 CRITICAL FIX!
+        with:
+          name: cypress-video
+          path: cypress/videos/**/*.mp4
+          retention-days: 1
+
+      - name: Upload Cypress screenshots
+        if: always()
+        uses: actions/upload-artifact@v4 # v3 -> v4 CRITICAL FIX!
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/**/*.png
+          retention-days: 1

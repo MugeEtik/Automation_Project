@@ -24,3 +24,5 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   // Diğer hataların testi durdurmasına izin ver: Sitenin kendi içindeki JS hatalarını görmezden gel, testi durdurma!
   return false;
 });
+
+import 'cypress-mochawesome-reporter/register';
